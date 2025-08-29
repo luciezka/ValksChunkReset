@@ -1,0 +1,13 @@
+{
+    "type": "code",
+    "modid": "valkschunkreset",
+    "name": "ValksChunkReset",
+    "authors": [
+        "SilverValkyrie"
+    ],
+    "description": "No need to call the admin anymore, the chunk resets for you!",
+    "version": "1.0",
+    "dependencies": {
+        "game": ""
+    }
+} 
