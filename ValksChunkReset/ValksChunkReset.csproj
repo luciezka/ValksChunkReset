@@ -4,7 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\$(Configuration)\Mods\mod</OutputPath>
-    <RootNamespace>ValksChunkReset</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,63 +1,42 @@
 ﻿using ValksFireStarter.assets.ModConfig;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
-using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 
 namespace ValksFireStarter;
 
 public class ValksChunkResetModSystem : ModSystem
-{ 
-    ModConfig fromDisk;
-    string cfgFileName = "ValksChunkReset.json";
-    
-    public override void StartPre(ICoreAPI api)
-    {
-        try
-        {
-            if ((fromDisk = api.LoadModConfig<ModConfig>(cfgFileName)) == null)
-            { api.StoreModConfig(ModConfig.Loaded, cfgFileName); }
-            else
-            { ModConfig.Loaded = fromDisk; }
-        }
-        catch
-        { api.StoreModConfig(ModConfig.Loaded, cfgFileName); }
-        base.StartPre(api);
-    }
-    
-    
+{
     public override void StartServerSide(ICoreServerAPI api)
     {
         base.StartServerSide(api);
-            api.Event.ServerRunPhase(EnumServerRunPhase.WorldReady, () =>
-                {
-            if (ModConfig.Loaded.activateReset && resetArchive(api.World.Calendar))
+        api.Event.ServerRunPhase(EnumServerRunPhase.WorldReady, () =>
+        {
+            if (ModConfig.Config.ActivateReset && ResetArchive(api.World.Calendar))
             {
                 api.Logger.Event("ValksChunkReset: Starting regeneration");
-                int x = ModConfig.Loaded.xCoordinates;
-                int y = ModConfig.Loaded.yCoordiantes;
+                int x = ModConfig.Config.XCoordinates;
+                int y = ModConfig.Config.ZCoordiantes;
 
-                int radius =  ModConfig.Loaded.radius;
+                int radius = ModConfig.Config.Radius;
                 for (int dx = -radius; dx <= radius; dx++)
                 {
                     for (int dy = -radius; dy <= radius; dy++)
                     {
-                        api.WorldManager.DeleteChunkColumn(x + dx, y + dy); 
+                        api.WorldManager.DeleteChunkColumn(x + dx, y + dy);
                     }
                 }
+
                 api.Logger.Event("ValksChunkReset: Selected Chunks were regenerated");
-                ModConfig.Loaded.lastResetOnDay = (int)api.World.Calendar.ElapsedDays;
-                api.StoreModConfig(ModConfig.Loaded,cfgFileName);
-                
+                ModConfig.Config.LastResetOnDay = (int)api.World.Calendar.ElapsedDays;
+                api.StoreModConfig(ModConfig.Config, "ValksChunkReset.json");
             }
         });
     }
-    
-    public bool resetArchive(IGameCalendar calendar)
+
+    private bool ResetArchive(IGameCalendar calendar)
     {
-        if (calendar.ElapsedDays > ModConfig.Loaded.lastResetOnDay +
-            ModConfig.Loaded.resetStructureEveryXDays)
+        if (calendar.ElapsedDays > ModConfig.Config.LastResetOnDay +
+            ModConfig.Config.ResetStructureEveryXDays)
         {
             return true;
         }
@@ -66,5 +45,4 @@ public class ValksChunkResetModSystem : ModSystem
             return false;
         }
     }
-    
 }
